@@ -9,7 +9,7 @@
 ;; Version: 0.1.0
 ;; Keywords: tools, async
 ;; Homepage: https://github.com/seokbeomkim/async-status
-;; Package-Requires: ((emacs "28.1") (posframe) (svg-lib "0.2.7"))
+;; Package-Requires: ((emacs "28.1") (svg-lib "0.2.7") posframe)
 
 ;; This file is not part of GNU Emacs.
 
@@ -124,12 +124,10 @@ If the related file exists, then the function returns FAIL."
   (let* ((dirpath (expand-file-name uuid async-status--private-directory))
          (filepath (expand-file-name id dirpath)))
     (condition-case err
-        (progn
-          (make-empty-file filepath)
-          (with-temp-buffer
-            (insert "0")
-            (write-region (point-min) (point-max) filepath nil))
-          t)
+        (make-empty-file filepath)
+      (with-temp-buffer
+        (insert "0")
+        (write-region (point-min) (point-max) filepath nil))
       (error nil))))
 
 (defun async-status--done-msg-id (uuid id)
