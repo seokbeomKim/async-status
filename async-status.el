@@ -7,9 +7,9 @@
 ;; Created: August 14, 2023
 ;; Modified: August 14, 2023
 ;; Version: 0.1.0
-;; Keywords: tools, kconfig, linux, kernel
+;; Keywords: tools, async
 ;; Homepage: https://github.com/seokbeomkim/async-status
-;; Package-Requires: ((emacs "28.1") (posframe "20230714.227") (svg-lib "0.2.7"))
+;; Package-Requires: ((emacs "28.1") (posframe) (svg-lib "0.2.7"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -44,12 +44,12 @@
   :link '(url-link "https://github.com/seokbeomKim/async-status")
   :group 'alert)
 
-(defcustom async-status-indicator-width (/ (frame-width) 4)
+(defcustom async-status-indicator-width (/ 462 (window-font-width))
   "The width of indicator bar."
   :type 'integer
   :group 'async-status)
 
-(defcustom async-status-progress-bar-width 160.0
+(defcustom async-status-progress-bar-width 150.0
   "The default x-width of the progress bar."
   :type 'float
   :group 'async-status)
@@ -63,7 +63,7 @@
   (expand-file-name "async-status" user-emacs-directory)
   "Default directory path for async-status package.
 
-This must be set for async-start, since the
+This must be set for `async-start', since the
 `USER-EMACS-DIRECTORY' could be different according to the
 runtime environment.")
 
@@ -151,9 +151,11 @@ If the related file exists, then the function returns FAIL."
 
 This function supports `THRESHOLD' that prevents Emacs from being
 held by ridiculous file updates."
-  (let* ((prev_val (string-to-number (async-status--get-msg-val uuid id))))
-    (if (< (+ prev_val (or threshold 0.01)) val)
-        (async-status--set-msg-val uuid id val))))
+  (if (not (floatp val))
+      (error "The type of `VAL' is not float")
+    (let* ((prev_val (string-to-number (async-status--get-msg-val uuid id))))
+      (if (< (+ prev_val (or threshold 0.01)) val)
+          (async-status--set-msg-val uuid id val)))))
 
 (defun async-status--set-msg-val (uuid id val)
   "Set `VAL' to `ID' of `UUID'.
@@ -188,7 +190,7 @@ By default, this function would not hide the status bar. If you
 are willing to hide forcely, set `FORCE' to t."
   (if (or force
           (null async-status--shown-items))
-    (posframe-hide "*async-status*")))
+      (posframe-hide "*async-status*")))
 
 (defun async-status--print-truncated-string (str max-length)
   "Print STR truncated with '...' if its length exceeds MAX-LENGTH."
@@ -242,7 +244,7 @@ This function is the callback function of file `EVENT'."
             (throw 'rval item))))))
 
 (defun async-status--remove-item (item)
-  "Remove `ITEM' from async-status--shown-items."
+  "Remove `ITEM' from `async-status--shown-items'."
   (setq async-status--shown-items
         (cl-remove-if (lambda (v) (eq v item))
                       async-status--shown-items)))
