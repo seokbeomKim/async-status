@@ -24,22 +24,18 @@ result.
 
 ### APIs for parent process
 
-- `async-status--req-uuid` returns UUID. 
-- `async-status--req-msg-id` creates the file to interact with the child
-  process.
-- `async-status--add-msg-to-bar` registers the corresponding item to the
+- `async-status-req-id` creates the file to interact with the child process.
+- `async-status-add-item-to-bar` registers the corresponding item to the
   indicator.
-- `async-status--remove-msg-from-bar` removes the corresponding item from the
+- `async-status-remove-item-from-bar` removes the corresponding item from the
   indicator.
-- `async-status--show` displays the indicator.
-- `async-status--hide` hides the indicator unless there are no registered items.
-- `async-status--done-msg-id` and `async-status--done-uuid` clean the
-  corresponding file nodes.
+- `async-status-show` displays the indicator.
+- `async-status-hide` hides the indicator unless there are no registered items.
+- `async-status-clean-up` and clean the corresponding file nodes.
 
 ### APIs for child process
 
-- `async-status--safely-set-msg-val` writes the value to corresponding file
-  node.
+- `async-status-safely-set-msg-val` writes the value to corresponding file node.
 
 ## Feedback
 
