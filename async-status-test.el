@@ -8,17 +8,14 @@
   "Run an example of async-status usage.
 
 `ID' must be set."
-  (let* ((async-uuid-val (async-status--req-uuid)) ; 1. Requst UUID
-         (async-msg-id-val (format "test #%d" id))
-         (local-directory user-emacs-directory)
+  (let* ((name-to-req-id (format "test-%d" id))
+         (alloc-id (async-status-req-id name-to-req-id)) ; 1. Request ID
          (my-load-path (string-join load-path ",")))
 
-    ;; 2. Request a message id with uuid.
-    (async-status--req-msg-id async-uuid-val async-msg-id-val)
-    ;; 3. Add the message to the status bar. This will watch the file change events.
-    (async-status--add-msg-to-bar async-uuid-val async-msg-id-val)
-    ;; 4. Show status bar
-    (async-status--show)
+    ;; 2. Add the message to the status bar. This will watch the file change events.
+    (async-status-add-item-to-bar alloc-id name-to-req-id)
+    ;; 3. Show status bar
+    (async-status-show)
 
     ;; Change status frame indicator width
     (setq async-status-indicator-width (/ 462 (window-font-width)))
@@ -29,26 +26,19 @@
         (mapcar (lambda (v)
                   (add-to-list 'load-path v))
                 (split-string ,my-load-path ","))
-        (setq user-emacs-directory ,local-directory)
-
-        ;; 5. Make sure async-status directory is set properly
-        (setq async-status--private-directory
-              (expand-file-name "async-status" user-emacs-directory))
 
         (require 'async-status)
         (let ((count 100.0))
           (dotimes (i count)
-            ;; 6. Update the message value. The value MUST BE float.
-            (async-status--safely-set-msg-val ,async-uuid-val
-                                              ,async-msg-id-val
+            ;; 4. Update the message value. The value MUST BE float.
+            (async-status-safely-set-msg-val ,alloc-id
                                               (/ i count))
             (sleep-for 0.10))))
      `(lambda (res)
-        ;; 7. After the use, clear the message-id and uuid
-        (async-status--remove-msg-from-bar ,async-uuid-val ,async-msg-id-val)
-        (async-status--done-msg-id ,async-uuid-val ,async-msg-id-val)
-        (async-status--done-uuid ,async-uuid-val)
-        (async-status--hide)))))
+        ;; 5. After the use, clean up the used item
+        (async-status-remove-item-from-bar ,alloc-id)
+        (async-status-clean-up ,alloc-id)
+        (async-status-hide)))))
 
 (dotimes (i 5)
   (async-status-test i))
