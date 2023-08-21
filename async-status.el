@@ -9,7 +9,7 @@
 ;; Version: 0.1.0
 ;; Keywords: tools, async
 ;; Homepage: https://github.com/seokbeomkim/async-status
-;; Package-Requires: ((emacs "28.1") (svg-lib "0.2.7") posframe)
+;; Package-Requires: ((emacs "28.1") (svg-lib "0.2.7") (posframe "1.4.2"))
 
 ;; This file is not part of GNU Emacs.
 
